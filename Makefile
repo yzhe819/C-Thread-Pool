@@ -2,11 +2,11 @@
 # 	./ThreadPool
 
 test_linkedlist:
-	gcc Linkedlist.test.c LinkedList.c Node.c -o test
+	gcc ./Tests/Linkedlist.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.h -o test
 	./test
 
 test_queue:
-	gcc Queue.test.c LinkedList.c Node.c Queue.c -o test
+	gcc ./Tests/Queue.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.h ./DataStructures/Queue.c -o test
 	./test
 
 # compile:

@@ -1,4 +1,4 @@
-#include "LinkedList.h"
+#include "../DataStructures/LinkedList.h"
 #include <stdio.h>
 
 int main() {
