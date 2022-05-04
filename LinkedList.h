@@ -5,15 +5,15 @@
 #include <stdlib.h>
 #include "Node.h"
 
-struct LinkedList_int {
-    struct Node_int* head;
+struct LinkedList {
+    struct Node* head;
     int length;
 
-    void (*insert)(int index, int data, struct LinkedList_int* linked_list);
-    void (*remove)(int index, struct LinkedList_int* linked_list);
-    int (*retrieve)(int index, struct LinkedList_int* linked_list);
+    void (*insert)(int index, void* data, struct LinkedList* linked_list);
+    void (*remove)(int index, struct LinkedList* linked_list);
+    void* (*retrieve)(int index, struct LinkedList* linked_list);
 };
 
-struct LinkedList_int linked_list_int_constructor();
+struct LinkedList linked_list_int_constructor();
 
 #endif /* LinkedList_h */
