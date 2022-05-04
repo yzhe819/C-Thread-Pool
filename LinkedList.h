@@ -14,6 +14,6 @@ struct LinkedList {
     void* (*retrieve)(int index, struct LinkedList* linked_list);
 };
 
-struct LinkedList linked_list_int_constructor();
+struct LinkedList linked_list_constructor();
 
 #endif /* LinkedList_h */

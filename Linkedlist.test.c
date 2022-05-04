@@ -1,8 +1,8 @@
-#include <stdio.h>
 #include "LinkedList.h"
+#include <stdio.h>
 
 int main() {
-    struct LinkedList list = linked_list_int_constructor();
+    struct LinkedList list = linked_list_constructor();
 
     for (int i = 0; i < 10; i++) {
         int* x = (int*)malloc(sizeof(int));

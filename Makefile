@@ -1,9 +1,13 @@
-dev:compile
-	./ThreadPool
+# dev:compile
+# 	./ThreadPool
 
-test:
-	gcc test.c LinkedList.c Node.c -o test
+test_linkedlist:
+	gcc Linkedlist.test.c LinkedList.c Node.c -o test
 	./test
 
-compile:
-	gcc ThreadPool.c -o ThreadPool
+test_queue:
+	gcc Queue.test.c LinkedList.c Node.c Queue.c -o test
+	./test
+
+# compile:
+# 	gcc ThreadPool.c -o ThreadPool

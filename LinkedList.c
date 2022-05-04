@@ -8,7 +8,7 @@ void insert_Node(int index, void* data, struct LinkedList* linked_list);
 void remove_Node(int index, struct LinkedList* linked_list);
 void* retrieve_data(int index, struct LinkedList* linked_list);
 
-struct LinkedList linked_list_int_constructor() {
+struct LinkedList linked_list_constructor() {
     struct LinkedList new_linked_list;
     new_linked_list.head = NULL;
     new_linked_list.length = 0;
