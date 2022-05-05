@@ -1,12 +1,12 @@
 #include "Queue.h"
 
-void push(void* data, struct Queue* queue) {
-    queue->list.insert(queue->list.length, data, &queue->list);
+void push(struct Queue* queue, void* data) {
+    queue->list.insert(&queue->list, queue->list.length, data);
 }
 
 void* pop(struct Queue* queue) {
-    void* data = queue->list.retrieve(0, &queue->list);
-    queue->list.remove(0, &queue->list);
+    void* data = queue->list.retrieve(&queue->list, 0);
+    queue->list.remove(&queue->list, 0);
     return data;
 }
 

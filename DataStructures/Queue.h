@@ -6,7 +6,7 @@
 struct Queue {
     struct LinkedList list;
 
-    void (*push)(void* data, struct Queue* queue);
+    void (*push)(struct Queue* queue, void* data);
     void* (*pop)(struct Queue* queue);
 };
 
