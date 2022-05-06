@@ -6,7 +6,7 @@ test_linkedlist:
 	./test
 
 test_queue:
-	gcc ./Tests/Queue.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.h ./DataStructures/Queue.c -o test
+	gcc ./Tests/Queue.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.c ./DataStructures/Queue.c -o test
 	./test
 
 # compile:

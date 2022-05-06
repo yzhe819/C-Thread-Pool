@@ -4,36 +4,40 @@ struct Node* create_Node(void* data);
 void destroy_Node(struct Node* node_to_destroy);
 
 struct Node* iterate(struct LinkedList* linked_list, int index);
-void insert_Node(struct LinkedList* linked_list, int index, void* data);
-void remove_Node(struct LinkedList* linked_list, int index);
+void insert_node(struct LinkedList* linked_list,
+                 int index,
+                 void* data,
+                 int data_type,
+                 int size);
+void remove_node(struct LinkedList* linked_list, int index);
 void* retrieve_data(struct LinkedList* linked_list, int index);
 
 struct LinkedList linked_list_constructor() {
-    struct LinkedList new_linked_list;
-    new_linked_list.head = NULL;
-    new_linked_list.length = 0;
+    struct LinkedList new_list;
+    new_list.head = NULL;
+    new_list.length = 0;
 
-    new_linked_list.insert = insert_Node;
-    new_linked_list.remove = remove_Node;
-    new_linked_list.retrieve = retrieve_data;
+    new_list.insert = insert_node;
+    new_list.remove = remove_node;
+    new_list.retrieve = retrieve_data;
 
-    return new_linked_list;
+    return new_list;
 }
 
-struct Node* create_Node(void* data) {
-    struct Node* new_node_address;
-    // Allocate memory for the new node
-    new_node_address = (struct Node*)malloc(sizeof(struct Node));
-    struct Node new_node_instance;
-    new_node_instance.data = data;
-    new_node_instance.next = NULL;
-    *new_node_address = new_node_instance;
-    return new_node_address;
+void linked_list_destructor(struct LinkedList* linked_list) {
+    for (int i = 0; i < linked_list->length; i++) {
+        linked_list->remove(linked_list, 0);
+    }
+}
+
+struct Node* create_node(void* data, int data_type, int size) {
+    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+    *new_node = node_constructor(data, data_type, size);
+    return new_node;
 };
 
 void destroy_Node(struct Node* node_to_destroy) {
-    free(node_to_destroy->data);
-    free(node_to_destroy);
+    node_destructor(node_to_destroy);
 };
 
 struct Node* iterate(struct LinkedList* linked_list, int index) {
@@ -48,8 +52,12 @@ struct Node* iterate(struct LinkedList* linked_list, int index) {
     return cursor;
 };
 
-void insert_Node(struct LinkedList* linked_list, int index, void* data) {
-    struct Node* node_to_insert = create_Node(data);
+void insert_node(struct LinkedList* linked_list,
+                 int index,
+                 void* data,
+                 int data_type,
+                 int size) {
+    struct Node* node_to_insert = create_node(data, data_type, size);
     if (index == 0) {
         node_to_insert->next = linked_list->head;
         linked_list->head = node_to_insert;
@@ -61,7 +69,7 @@ void insert_Node(struct LinkedList* linked_list, int index, void* data) {
     linked_list->length += 1;
 }
 
-void remove_Node(struct LinkedList* linked_list, int index) {
+void remove_node(struct LinkedList* linked_list, int index) {
     if (index == 0) {
         struct Node* node_to_remove = linked_list->head;
         linked_list->head = node_to_remove->next;
