@@ -5,9 +5,8 @@ int main() {
     struct LinkedList list = linked_list_constructor();
 
     for (int i = 0; i < 10; i++) {
-        int* x = (int*)malloc(sizeof(int));
-        *x = i;
-        list.insert(&list, i, x);
+        int a = i;
+        list.insert(&list, i, &a, Int, 1);
     }
 
     list.remove(&list, 3);

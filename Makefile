@@ -2,7 +2,7 @@
 # 	./ThreadPool
 
 test_linkedlist:
-	gcc ./Tests/Linkedlist.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.h -o test
+	gcc ./Tests/Linkedlist.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.c -o test
 	./test
 
 test_queue:
