@@ -11,5 +11,6 @@ test_queue:
 	gcc ./Tests/Queue.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.c ./DataStructures/Queue.c -o ./bin/test
 	./bin/test
 
-# compile:
-# 	gcc ThreadPool.c -o ThreadPool
+test_threadpool:
+	gcc -pthread ./test.c ./ThreadPool.c ./DataStructures/LinkedList.c ./DataStructures/Node.c ./DataStructures/Queue.c -o ./bin/test
+	./bin/test
