@@ -27,5 +27,19 @@ int main() {
         list.pop(&list);
     }
 
+    // test 3:
+    // for (int i = 0; i < 10; i++) {
+    //     int a = i;
+    //     list.push(&list, &a, Int, 1);
+    // }
+
+    // list.pop(&list);
+    // list.pop(&list);
+
+    // for (int i = 0; i < 8; i++) {
+    //     printf("%d\n", *(int*)list.peek(&list));
+    //     list.pop(&list);
+    // }
+
     queue_destructor(&list);
 }

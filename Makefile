@@ -2,12 +2,14 @@
 # 	./ThreadPool
 
 test_linkedlist:
-	gcc ./Tests/Linkedlist.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.c -o test
-	./test
+	mkdir -p bin
+	gcc ./Tests/Linkedlist.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.c -o ./bin/test
+	./bin/test
 
 test_queue:
-	gcc ./Tests/Queue.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.c ./DataStructures/Queue.c -o test
-	./test
+	mkdir -p bin
+	gcc ./Tests/Queue.test.c ./DataStructures/LinkedList.c ./DataStructures/Node.c ./DataStructures/Queue.c -o ./bin/test
+	./bin/test
 
 # compile:
 # 	gcc ThreadPool.c -o ThreadPool
