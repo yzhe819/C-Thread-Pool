@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void* thread_job(void* arg);
+void* thread_job(void* args);
 void add_work(struct ThreadPool* thread_pool, struct ThreadJob job);
 
 struct ThreadPool thread_pool_constructor(int num_threads) {
@@ -46,11 +46,12 @@ struct ThreadJob thread_job_constructor(void* (*func)(void* args), void* args) {
 void* thread_job(void* args) {
     struct ThreadPool* thread_pool = (struct ThreadPool*)args;
     while (thread_pool->active == 1) {
+        printf("thread %ld is working\n", pthread_self());
         pthread_mutex_lock(&thread_pool->lock);
         pthread_cond_wait(&thread_pool->signal, &thread_pool->lock);
+        printf("thread %ld get job\n", pthread_self());
         struct ThreadJob job =
             *(struct ThreadJob*)thread_pool->work.peek(&thread_pool->work);
-
         thread_pool->work.pop(&thread_pool->work);
         pthread_mutex_unlock(&thread_pool->lock);
         if (job.job) {
@@ -61,9 +62,10 @@ void* thread_job(void* args) {
 }
 
 void add_work(struct ThreadPool* thread_pool, struct ThreadJob job) {
-    pthread_mutex_lock(&thread_pool->lock);
+    // pthread_mutex_lock(&thread_pool->lock);
     // todo update the node section
+    printf("submit work into queue\n");
     thread_pool->work.push(&thread_pool->work, &job, Special, sizeof(job));
     pthread_cond_signal(&thread_pool->signal);
-    pthread_mutex_unlock(&thread_pool->lock);
+    // pthread_mutex_unlock(&thread_pool->lock);
 }

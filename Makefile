@@ -12,5 +12,6 @@ test_queue:
 	./bin/test
 
 test_threadpool:
-	gcc -pthread ./test.c ./ThreadPool.c ./DataStructures/LinkedList.c ./DataStructures/Node.c ./DataStructures/Queue.c -o ./bin/test
+	mkdir -p bin
+	gcc -pthread ./test.c ./ThreadPool.c ./DataStructures/LinkedList.c ./DataStructures/Node.c ./DataStructures/Queue.c -lm -o ./bin/test
 	./bin/test
