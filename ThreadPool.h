@@ -5,13 +5,14 @@
 #include "./DataStructures/Queue.h"
 
 struct ThreadJob {
-    void* (*job)(void* args);
-    void* args;
+    void* (*job)(void* arg);
+    void* arg;
 };
 
 struct ThreadPool {
     int num_threads;
     int active;
+    int workCount;
     struct Queue work;
     pthread_t* pool;
     pthread_mutex_t lock;
@@ -22,7 +23,7 @@ struct ThreadPool {
 };
 
 struct ThreadPool thread_pool_constructor(int num_threads);
-struct ThreadJob thread_job_constructor(void* (*func)(void* args), void* args);
+struct ThreadJob thread_job_constructor(void* (*func)(void* arg), void* arg);
 
 void thread_pool_destructor(struct ThreadPool* thread_pool);
 
