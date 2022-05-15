@@ -40,3 +40,21 @@ typedef struct thpool_ {
     pthread_cond_t threads_all_idle;  // condition variable for all threads idle
     jobqueue* jobqueue;               // pointer to the job queue
 } thpool_;
+
+// function prototypes
+static int thread_init(thpool_* thpool_p, struct thread** thread_p, int id);
+static void* thread_do(void* thread_p);
+static void thread_hold(int sig_id);
+static void thread_destory(struct thread* thread_p);
+
+static int jobqueue_init(jobqueue* jobqueue_p);
+static void jobqueue_clear(jobqueue* jobqueue_p);
+static void jobqueue_push(jobqueue* jobqueue_p, job* newjob_p);
+static struct job* jobqueue_pull(jobqueue* jobqueue_p);
+static void jobqueue_destroy(jobqueue* jobqueue_p);
+
+static void bsem_init(struct bsem* bsem_p, int value);
+static void bsem_reset(struct bsem* bsem_p);
+static void bsem_post(struct bsem* bsem_p);
+static void bsem_post_all(struct bsem* bsem_p);
+static void bsem_wait(struct bsem* bsem_p);
