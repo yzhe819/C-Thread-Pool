@@ -1,6 +1,12 @@
 #include "thpool.h"
 #include <errno.h>
 #include <pthread.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/prctl.h>  // for linux
+#include <time.h>
+#include <unistd.h>
 
 // global variables
 static volatile int threads_keepalive;
@@ -110,6 +116,40 @@ struct thpool_* thpool_init(int num_threads) {
     }
 
     return thpool_p;
+}
+
+// thread implementation
+static int thread_init(thpool_* thpool_p, struct thread** thread_p, int id) {
+    *thread_p = (struct thread*)malloc(sizeof(struct thread));
+    if (*thread_p == NULL) {
+        err("thread_init(): Could not allocate memory for thread");
+        return -1;
+    }
+
+    (*thread_p)->id = id;
+    (*thread_p)->thpool_p = thpool_p;
+
+    pthread_create(&(*thread_p)->pthread, NULL, (void* (*)(void*))thread_do,
+                   *thread_p);
+    pthread_detach((*thread_p)->pthread);
+    return 0;
+}
+
+static void thread_hold(int sig_id) {
+    (void)sig_id;  //???
+    threads_on_hold = 1;
+    while (threads_on_hold) {
+        sleep(1);
+    }
+}
+
+static void* thread_do(thread* thread_p) {
+    // todo : implement thread_do
+    return NULL;
+}
+
+static void theard_destory(thread* thread_p) {
+    free(thread_p);
 }
 
 // job queue implementation
