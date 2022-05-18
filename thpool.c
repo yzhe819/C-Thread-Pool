@@ -144,7 +144,67 @@ static void thread_hold(int sig_id) {
 }
 
 static void* thread_do(thread* thread_p) {
-    // todo : implement thread_do
+    // set the thread name
+    char thread_name[32] = {0};
+    sprintf(thread_name, "thread-%d", thread_p->id);
+    prctl(PR_SET_NAME, thread_name);  // only for linux
+
+    thpool_* thpool_p = thread_p->thpool_p;
+
+    // register signal handler
+    struct sigaction act;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+    act.sa_handler = thread_hold;
+    if (sigaction(SIGUSR1, &act, NULL) == -1) {
+        err("thread_do(): Could not set signal handler");
+        return NULL;
+    }
+
+    // mark thread as alive
+    pthread_mutex_lock(&thpool_p->thcount_lock);
+    thpool_p->num_threads_alive++;
+    pthread_mutex_unlock(&thpool_p->thcount_lock);
+
+    while (threads_keepalive) {
+        // wait for work to do
+        bsem_wait(thpool_p->jobqueue->has_jobs);
+
+        // exit thread if all jobs are done
+        if (threads_keepalive) {
+            // mark thread as working
+            pthread_mutex_lock(&thpool_p->thcount_lock);
+            thpool_p->num_threads_working++;
+            pthread_mutex_unlock(&thpool_p->thcount_lock);
+
+            void (*func_buff)(void*);
+            void* arg_buff;
+
+            // get job from queue
+            job* job_p = jobqueue_pull(&thpool_p->jobqueue);
+            if (job_p) {
+                func_buff = job_p->function;
+                arg_buff = job_p->arg;
+                // execute the job
+                func_buff(arg_buff);
+                free(job_p);
+            }
+
+            pthread_mutex_lock(&thpool_p->thcount_lock);
+            thpool_p->num_threads_working--;
+            // no running threads
+            if (!thpool_p->num_threads_working) {
+                pthread_cond_signal(&thpool_p->threads_all_idle);
+            }
+            pthread_mutex_unlock(&thpool_p->thcount_lock);
+        }
+    }
+
+    // remove the alive thread count
+    pthread_mutex_lock(&thpool_p->thcount_lock);
+    thpool_p->num_threads_alive--;
+    pthread_mutex_unlock(&thpool_p->thcount_lock);
+
     return NULL;
 }
 
