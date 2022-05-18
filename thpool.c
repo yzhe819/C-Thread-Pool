@@ -118,6 +118,83 @@ struct thpool_* thpool_init(int num_threads) {
     return thpool_p;
 }
 
+int thpool_add_work(threadpool, void (*function_p)(void*), void* arg_p) {
+    job* newjob;
+
+    newjob = (struct job*)malloc(sizeof(struct job));
+    if (newjob == NULL) {
+        err("thpool_add_work(): Could not allocate memory for new job");
+        return -1;
+    }
+
+    newjob->function_p = function_p;
+    newjob->arg = arg_p;
+
+    jobqueue_pull(&thpool_p->jobqueue, newjob);
+
+    return 0;
+}
+
+void thpool_wait(thpool_* thpool_p) {
+    pthread_mutex_lock(&thpool_p->thcount_lock);
+    while (thpool_p->jobqueue.len || thpool_p->num_threads_working) {
+        pthread_cond_wait(&thpool_p->threads_all_idle, &thpool_p->thcount_lock);
+    }
+    pthread_mutex_unlock(&thpool_p->thcount_lock);
+}
+
+void thpool_destroy(thpool_* thpool_p) {
+    if (thpool_p == NULL) {
+        return;
+    }
+
+    volatile int threads_total = thpool_p->num_threads_alive;
+    threads_keepalive = 0;
+
+    // give one second to kill idle threads
+    double TIMEOUT = 1.0;
+    time_t start, end;
+    double tpassed = 0.0;
+    time(&start);
+    while (tpassed < TIMEOUT && thpool_p->num_threads_alive) {
+        bsem_post_all(thpool_p->jobqueue.has_jobs);
+        time(&end);
+        tpassed = difftime(end, start);
+    }
+
+    // poll the remaining threads
+    while (thpool_p->num_threads_alive) {
+        bsem_post_all(thpool_p->jobqueue.has_jobs);
+        sleep(1);
+    }
+
+    // destroy the job queue
+    jobqueue_destroy(&thpool_p->jobqueue);
+
+    // free all the threads
+    for (int n = 0; n < threads_total; n++) {
+        thread_destory(thpool_p->threads[n]);
+    }
+
+    free(thpool_p->threads);
+    free(thpool_p);
+}
+
+void thpool_pause(thpool_* thpool_p) {
+    for (int n = 0; n < thpool_p->num_threads_alive; n++) {
+        pthread_kill(thpool_p->threads[n]->pthread, SIGUSR1);
+    }
+}
+
+void thpool_resume(thpool_* thpool_p) {
+    // this will stop all the thread pools
+    threads_on_hold = 0;
+}
+
+int thpool_num_threads_working(thpool_* thpool_p) {
+    return thpool_p->num_threads_working;
+}
+
 // thread implementation
 static int thread_init(thpool_* thpool_p, struct thread** thread_p, int id) {
     *thread_p = (struct thread*)malloc(sizeof(struct thread));
