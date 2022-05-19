@@ -48,7 +48,7 @@ typedef struct thpool_ {
     volatile int num_threads_working;  // number of threads working
     pthread_mutex_t thcount_lock;      // mutex lock for thread count
     pthread_cond_t threads_all_idle;  // condition variable for all threads idle
-    jobqueue* jobqueue;               // pointer to the job queue
+    jobqueue jobqueue;                // pointer to the job queue
 } thpool_;
 
 // function prototypes
