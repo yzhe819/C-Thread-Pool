@@ -8,6 +8,9 @@
 #include <time.h>
 #include <unistd.h>
 
+// error messages
+#define err(str) fprintf(stderr, str)
+
 // global variables
 static volatile int threads_keepalive;
 static volatile int threads_on_hold;
@@ -56,7 +59,7 @@ static void thread_destroy(struct thread* thread_p);
 
 static int jobqueue_init(jobqueue* jobqueue_p);
 static void jobqueue_clear(jobqueue* jobqueue_p);
-static void jobqueue_push(jobqueue* jobqueue_p, job* newjob_p);
+static void jobqueue_push(jobqueue* jobqueue_p, struct job* newjob_p);
 static struct job* jobqueue_pull(jobqueue* jobqueue_p);
 static void jobqueue_destroy(jobqueue* jobqueue_p);
 
