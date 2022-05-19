@@ -22,10 +22,10 @@ typedef struct bsem {       // binary semaphore
     int v;
 } bsem;
 
-typedef struct job {                // the executed function
-    struct job* prev;               // pointer to the prev job
-    void (*function_p)(void* arg);  // function pointer
-    void* arg;                      // function argument
+typedef struct job {              // the executed function
+    struct job* prev;             // pointer to the prev job
+    void (*function)(void* arg);  // function pointer
+    void* arg;                    // function argument
 } job;
 
 typedef struct jobqueue {
@@ -132,7 +132,7 @@ int thpool_add_work(threadpool thpool_p,
         return -1;
     }
 
-    newjob->function_p = function_p;
+    newjob->function = function_p;
     newjob->arg = arg_p;
 
     jobqueue_push(&thpool_p->jobqueue, newjob);
@@ -265,7 +265,7 @@ static void* thread_do(struct thread* thread_p) {
             // get job from queue
             job* job_p = jobqueue_pull(&thpool_p->jobqueue);
             if (job_p) {
-                func_buff = job_p->function_p;
+                func_buff = job_p->function;
                 arg_buff = job_p->arg;
                 // execute the job
                 func_buff(arg_buff);
