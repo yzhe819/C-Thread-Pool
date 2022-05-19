@@ -250,7 +250,7 @@ static void* thread_do(struct thread* thread_p) {
 
     while (threads_keepalive) {
         // wait for work to do
-        bsem_wait(thpool_p->jobqueue->has_jobs);
+        bsem_wait(thpool_p->jobqueue.has_jobs);
 
         // exit thread if all jobs are done
         if (threads_keepalive) {
