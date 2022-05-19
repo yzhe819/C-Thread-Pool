@@ -50,9 +50,9 @@ typedef struct thpool_ {
 
 // function prototypes
 static int thread_init(thpool_* thpool_p, struct thread** thread_p, int id);
-static void* thread_do(void* thread_p);
+static void* thread_do(struct thread* thread_p);
 static void thread_hold(int sig_id);
-static void thread_destory(struct thread* thread_p);
+static void thread_destroy(struct thread* thread_p);
 
 static int jobqueue_init(jobqueue* jobqueue_p);
 static void jobqueue_clear(jobqueue* jobqueue_p);
@@ -107,7 +107,7 @@ struct thpool_* thpool_init(int num_threads) {
     pthread_cond_init(&thpool_p->threads_all_idle, NULL);
 
     // thread init
-    for (int n = 0; i < num_threads; n++) {
+    for (int n = 0; n < num_threads; n++) {
         thread_init(thpool_p, &thpool_p->threads[n], n);
     }
 
@@ -118,7 +118,9 @@ struct thpool_* thpool_init(int num_threads) {
     return thpool_p;
 }
 
-int thpool_add_work(threadpool, void (*function_p)(void*), void* arg_p) {
+int thpool_add_work(threadpool thpool_p,
+                    void (*function_p)(void*),
+                    void* arg_p) {
     job* newjob;
 
     newjob = (struct job*)malloc(sizeof(struct job));
@@ -130,7 +132,7 @@ int thpool_add_work(threadpool, void (*function_p)(void*), void* arg_p) {
     newjob->function_p = function_p;
     newjob->arg = arg_p;
 
-    jobqueue_pull(&thpool_p->jobqueue, newjob);
+    jobqueue_push(&thpool_p->jobqueue, newjob);
 
     return 0;
 }
@@ -173,7 +175,7 @@ void thpool_destroy(thpool_* thpool_p) {
 
     // free all the threads
     for (int n = 0; n < threads_total; n++) {
-        thread_destory(thpool_p->threads[n]);
+        thread_destroy(thpool_p->threads[n]);
     }
 
     free(thpool_p->threads);
@@ -220,7 +222,7 @@ static void thread_hold(int sig_id) {
     }
 }
 
-static void* thread_do(thread* thread_p) {
+static void* thread_do(struct thread* thread_p) {
     // set the thread name
     char thread_name[32] = {0};
     sprintf(thread_name, "thread-%d", thread_p->id);
@@ -260,7 +262,7 @@ static void* thread_do(thread* thread_p) {
             // get job from queue
             job* job_p = jobqueue_pull(&thpool_p->jobqueue);
             if (job_p) {
-                func_buff = job_p->function;
+                func_buff = job_p->function_p;
                 arg_buff = job_p->arg;
                 // execute the job
                 func_buff(arg_buff);
@@ -285,7 +287,7 @@ static void* thread_do(thread* thread_p) {
     return NULL;
 }
 
-static void theard_destory(thread* thread_p) {
+static void thread_destroy(thread* thread_p) {
     free(thread_p);
 }
 
